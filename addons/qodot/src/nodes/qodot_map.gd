@@ -32,6 +32,8 @@ signal unwrap_uv2_complete()
 @export_category("Map")
 ## Trenchbroom Map file to build a scene from
 @export_global_file("*.map") var map_file := ""
+## New experimental parser
+@export var use_experimental_regex_parser := false
 ## Ratio between Trenchbroom units in the .map file and Godot units.
 ## An inverse scale factor of 16 would cause 16 Trenchbroom units to correspond to 1 Godot unit. See [url=https://qodotplugin.github.io/docs/geometry.html#scale]Scale[/url] in the Qodot documentation.
 @export var inverse_scale_factor := 16.0
@@ -138,7 +140,7 @@ func verify_parameters():
 		push_warning("Editor does not support C#, map build support is disabled.")
 		return false
 	elif not qodot or DEBUG:
-		qodot = load("res://addons/qodot/src/core/Qodot.cs").new()
+		qodot = load("res://addons/qodot/src/core/Qodot.cs").new(use_experimental_regex_parser)
 	
 	if not qodot:
 		push_error("Error: Failed to load qodot.")
@@ -180,7 +182,7 @@ func reset_build_context():
 	build_step_count = 0
 	
 	if qodot:
-		qodot.Reset()
+		qodot.Reset(use_experimental_regex_parser)
 ## Record the start time of a build step for profiling
 func start_profile(item_name: String) -> void:
 	if print_profiling_data:

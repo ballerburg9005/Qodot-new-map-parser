@@ -39,7 +39,8 @@ namespace Qodot
 		private string propKey = "";
 		private string currentProperty = "";
 		private bool valveUVs = false;
-		
+
+		private bool recoverFromException = false;		
 		private int componentIdx = 0;
 		private Entity currentEntity;
 		private Brush currentBrush;
@@ -71,7 +72,18 @@ namespace Qodot
 				List<string> tokens = CustomSplit(line);
 				for (int i = 0; i < tokens.Count; i++)
 				{
-					ParseToken(tokens[i]);
+					try
+					{
+						if(recoverFromException && tokens[i] != "{") continue;
+						else recoverFromException = false;
+						ParseToken(tokens[i]);
+					}
+					catch (Exception ex)
+					{
+						GD.PrintErr("Failed to parse: "+tokens[i]+" scope: "+scope.ToString());
+						scope = ParseScope.ENTITY;
+						recoverFromException = true;
+					}
 				}
 			}
 			

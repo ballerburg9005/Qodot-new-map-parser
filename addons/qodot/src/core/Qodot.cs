@@ -15,17 +15,22 @@ namespace Qodot
 	{
 		public MapData mapData;
 		public MapParser mapParser;
+		public MapParserRegex mapParserRegex;
 		public GeoGenerator geoGenerator;
 		public SurfaceGatherer surfaceGatherer;
 
-		public Qodot()
+		private bool UseExperimentalRegexParser;
+
+		public Qodot(bool useRegex)
 		{
-			Reset();
+			Reset(useRegex);
 		}
 
-		public void Reset()
+		public void Reset(bool useRegex)
 		{
+			UseExperimentalRegexParser = useRegex;
 			mapData = new MapData();
+			mapParserRegex = new MapParserRegex(mapData);
 			mapParser = new MapParser(mapData);
 			geoGenerator = new GeoGenerator(mapData);
 			surfaceGatherer = new SurfaceGatherer(mapData);
@@ -33,7 +38,9 @@ namespace Qodot
 
 		public void LoadMap(string filename)
 		{
-			mapParser.Load(filename);
+			if(UseExperimentalRegexParser) mapParserRegex.Load(filename);
+			else mapParser.Load(filename);
+
 		}
 
 		public Array<string> GetTextureList()
