@@ -20,19 +20,21 @@ namespace Qodot
 		public SurfaceGatherer surfaceGatherer;
 
 		private bool UseExperimentalRegexParser;
+		private int patchTesselationLevel;
 
-		public Qodot(bool useRegex)
+		public Qodot(bool useRegex, int patchTess)
 		{
-			Reset(useRegex);
+			Reset(useRegex, patchTess);
 		}
 
-		public void Reset(bool useRegex)
+		public void Reset(bool useRegex, int patchTess)
 		{
 			UseExperimentalRegexParser = useRegex;
+			patchTesselationLevel = patchTess;
 			mapData = new MapData();
 			mapParserRegex = new MapParserRegex(mapData);
 			mapParser = new MapParser(mapData);
-			geoGenerator = new GeoGenerator(mapData);
+			geoGenerator = new GeoGenerator(mapData, patchTesselationLevel);
 			surfaceGatherer = new SurfaceGatherer(mapData);
 		}
 

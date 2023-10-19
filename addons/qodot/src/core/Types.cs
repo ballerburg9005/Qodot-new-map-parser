@@ -44,10 +44,29 @@ namespace Qodot
 		public ValveUV uvValve;
 		public FaceUVExtra uvExtra;
 	}
-
+	
+	public struct PatchData
+	{
+		public List<Vector3> verts;
+		public List<Vector2> uvs;
+		public List<int> index;
+	}
+	
+	public struct Patch
+	{
+		public List<Vector3> verts;
+		public List<Vector2> uvs;
+		public int textureIdx;
+		public Vector2 uvStandard;
+		public FaceUVExtra uvExtra;
+		public int rows;
+		public int cols;
+	}
+	
 	public struct Brush
 	{
 		public List<Face> faces = new List<Face>();
+		public Patch patch = new Patch();
 		public Vector3 center;
 
 		public Brush()
@@ -120,4 +139,5 @@ namespace Qodot
 			this.buildVisuals = buildVisuals;
 		}
 	}
+	
 }

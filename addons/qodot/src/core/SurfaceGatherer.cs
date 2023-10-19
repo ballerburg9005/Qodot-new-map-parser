@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -121,8 +121,12 @@ namespace Qodot
 
 		private bool FilterBrush(int entityIdx, int brushIdx)
 		{
+			//return false; // CMPQ
 			Span<Face> faceSpan = mapData.GetFacesSpan(entityIdx, brushIdx);
-
+			Span<Brush> brushes = mapData.GetBrushesSpan(entityIdx);
+			
+			ref Brush brush = ref brushes[brushIdx];
+			
 			if (brushFilterTextureIdx != -1)
 			{
 				bool fullyTextured = true;
@@ -134,6 +138,8 @@ namespace Qodot
 						break;
 					}
 				}
+				if (brush.patch.textureIdx != brushFilterTextureIdx)
+					fullyTextured = false;
 
 				if (fullyTextured) return true;
 			}
@@ -145,6 +151,8 @@ namespace Qodot
 					if (faceSpan[f].textureIdx == mapData.worldspawnLayers[l].textureIdx) return filterWorldspawnLayers;
 				}
 			}
+			for (int l = 0; l < mapData.worldspawnLayers.Count; l++)
+				if (brush.patch.textureIdx == mapData.worldspawnLayers[l].textureIdx) return filterWorldspawnLayers;
 			
 			return false;
 		}
@@ -153,13 +161,22 @@ namespace Qodot
 		{
 			Span<Face> faceSpan = mapData.GetFacesSpan(entityIdx, brushIdx);
 			Span<FaceGeometry> faceGeoSpan = mapData.GetFaceGeoSpan(entityIdx, brushIdx);
+			Span<Brush> brushes = mapData.GetBrushesSpan(entityIdx);
+			
+			ref Brush brush = ref brushes[brushIdx];
+			
 			if (faceGeoSpan[faceIdx].vertices.Count < 3) return true;
 			
+			Console.WriteLine("WTF "+brush);
+			int textureIdx;
+			if(brush.patch.verts != null) textureIdx = brush.patch.textureIdx;
+			else textureIdx = faceSpan[faceIdx].textureIdx;
+			
 			// Omit faces textured with skip.
-			if (faceFilterTextureIdx != -1 && faceSpan[faceIdx].textureIdx == faceFilterTextureIdx) return true;
+			if (faceFilterTextureIdx != -1 && textureIdx == faceFilterTextureIdx) return true;
 			
 			// Omit filtered texture indices.
-			if (textureFilterIdx != -1 && faceSpan[faceIdx].textureIdx != textureFilterIdx) return true;
+			if (textureFilterIdx != -1 && textureIdx != textureFilterIdx) return true;
 			
 			return false;
 		}

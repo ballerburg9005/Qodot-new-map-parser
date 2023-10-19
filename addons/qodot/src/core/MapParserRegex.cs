@@ -60,8 +60,8 @@ public class MapParserRegex
 				// add geometry items (brushes and patches)
 				foreach(Dictionary<string, string> parserRawGeoItem in parserRawGeoItems)
 				{
-					Brush currentBrush 				= new Brush();
-					string	parserGeoItemHint   	= extractItemHint(parserRawGeoItem["before"]);
+					Brush currentBrush              = new Brush();
+					string	parserGeoItemHint       = extractItemHint(parserRawGeoItem["before"]);
 	
 					if(parserRawGeoItem.ContainsKey("brackets"))
 					{
@@ -76,8 +76,8 @@ public class MapParserRegex
 						// handle Patches
 						if(Regex.Match(parserGeoDefName, @"patch").Success)
 						{
-							string parserPreparedInput 	= removeComments(parserInput).Replace("\n", " \n").Replace(")", " )");
-							Match parserRegexResult 	= Regex.Match(parserPreparedInput, parserPatchPattern, RegexOptions.Singleline);
+							string parserPreparedInput  = removeComments(parserInput).Replace("\n", " \n").Replace(")", " )");
+							Match parserRegexResult     = Regex.Match(parserPreparedInput, parserPatchPattern, RegexOptions.Singleline);
 								
 							Console.WriteLine(parserPatchPattern);
 							if(parserRegexResult.Success)
@@ -87,14 +87,50 @@ public class MapParserRegex
 							
 									
 								string parserPreparedInputSub = removeComments(parserRegexResult.Groups[3].Value).Replace("\n", " \n").Replace(")", " )");
+								
+								List<Vector3> control = new List<Vector3>();
+								List<Vector2> controlUVs = new List<Vector2>();
+								
+								int rows = 0;
+								int cols = 0;
+								
 								foreach(string parserPreparedInputSubLine in parserPreparedInputSub.Split("\n"))
 								{
 									MatchCollection parserRegexResultSub = Regex.Matches(parserPreparedInputSubLine, parserPatchSubPattern);
+									
+									if(parserRegexResultSub.Count > 0) 
+									{
+										rows++;
+										cols = 0;
+									}
+									
 									foreach(Match parserRegexMatch in parserRegexResultSub)
 									{
 										Console.WriteLine("Got patch vector & UV: "+GetCaptures(parserRegexMatch.Groups[1]));
+										if(parserRegexMatch.Groups[1].Captures.Count == 5)			// patchDef2
+										{
+											control.Add(new Vector3(toFloat(parserRegexMatch.Groups[1].Captures[0].Value), toFloat(parserRegexMatch.Groups[1].Captures[1].Value), toFloat(parserRegexMatch.Groups[1].Captures[2].Value)));
+											controlUVs.Add(new Vector2(toFloat(parserRegexMatch.Groups[1].Captures[3].Value), toFloat(parserRegexMatch.Groups[1].Captures[4].Value)));
+											cols++;
+										}
+										else Console.WriteLine("Error, patch unexpected vertex count"); // TODO handle this
 									}
 								}
+								currentBrush.patch = new Patch();
+								currentBrush.patch.verts = control;
+								currentBrush.patch.uvs = controlUVs;
+								currentBrush.patch.rows = rows;
+								currentBrush.patch.cols = cols;
+								currentBrush.patch.textureIdx = mapData.RegisterTexture(stripQuotes(parserRegexResult.Groups[1].Value.Replace(" ", "").Replace("\t ", "")));
+								
+								if(parserRegexResult.Groups[2].Captures.Count >= 5) // TODO this is nonsense, values (3 3 0 0) never used?!
+								{
+									currentBrush.patch.uvStandard = new Vector2(toFloat(parserRegexResult.Groups[2].Captures[0].Value),toFloat(parserRegexResult.Groups[2].Captures[1].Value));
+									currentBrush.patch.uvExtra.rot = toFloat(parserRegexResult.Groups[2].Captures[2].Value);
+									currentBrush.patch.uvExtra.scaleX = toFloat(parserRegexResult.Groups[2].Captures[3].Value);
+									currentBrush.patch.uvExtra.scaleY = toFloat(parserRegexResult.Groups[2].Captures[4].Value);
+								}
+								else Console.WriteLine("Error, patch unexpected texture parameter count"); // TODO handle this
 							}
 							else
 							{
@@ -197,7 +233,7 @@ public class MapParserRegex
 								currentBrush.faces.Add(currentFace);
 							}
 						}
-						if(currentBrush.faces.Count > 0)
+						if(currentBrush.faces.Count > 0 || currentBrush.patch.verts != null)
 							currentEntity.brushes.Add(currentBrush);
 						else
 							GD.Print("Empty brush: "+parserGeoItemHint);

@@ -6,7 +6,7 @@
 script = ExtResource("1")
 spawn_type = 0
 build_visuals = true
-collision_shape_type = 1
+collision_shape_type = 2
 classname = "worldspawn"
 description = "World Entity"
 qodot_internal = false
