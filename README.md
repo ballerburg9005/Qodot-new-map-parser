@@ -14,6 +14,8 @@ However since the implementation was quite time-consuming, in this time first th
 
 *However, you can still load Xonotic and Quake 3 maps with this repository if you follow those steps.*
 
+The same method can also be used with mainline Qodot, if you put a simple "try .. catch" inside the map parser, so it will not die when parsing patches. However, since the upstream Qodot has no patch support, the results might be too poor with the majority of maps to be playable. With this project you will get quite passable results mostly.
+
 # making it work
 
 1. If you only have a .bsp, use q3map2 to convert to .map like so (-game parameter is not ultimately necessary):
