@@ -8,7 +8,7 @@ https://github.com/ballerburg9005/Qodot-new-map-parser/assets/50874674/347fef18-
 
 
 
-I started heavy work on Qodot, so it would be able to read PatchDef2 (bezier curves used to implement basic geometry such as terrain, pillars, arches, etc.), which is required for Quake 3, Xonotic and many other open source game maps like Warsow and what not to work. There are tens of thousands of community maps for those games and each map takes like dozens if not hundreds of hours to create, so it seemed really worthwhile to do this.
+I started heavy work on Qodot, so it would be able to read PatchDef2 (bezier curves used to implement basic geometry such as terrain, pillars, arches, etc.), which is required for Quake 3, Xonotic and many other open source game maps like Warsow and what not to work. There are tens of thousands of community maps for those games, and each map takes like dozens if not hundreds of hours to create, so it seemed really worthwhile to do this.
 
 However since the implementation was quite time-consuming, in this time first there was totally unrelated drama with the devs, then Qodot was radically rewritten (ditched C# in favor of GDScript). Since everything I wrote was in C#, plus the drama, this code is basically now dead, which is pretty sad. I would like to resume this project, but it would require the Qodot devs to come forward and resolve the trust issues they created first.
 
