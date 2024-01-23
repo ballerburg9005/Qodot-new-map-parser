@@ -18,6 +18,8 @@ The same method can also be used with mainline Qodot, if you put a simple "try .
 
 # making it work
 
+If you are not on Linux, use MSYS2 for the bash scripts.
+
 1. If you only have a .bsp, use q3map2 to convert to .map like so (-game parameter is not ultimately necessary):
 
 ```
